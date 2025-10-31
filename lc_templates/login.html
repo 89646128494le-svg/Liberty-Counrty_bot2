@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<div class="login-card">
+    <h2>Вход</h2>
+    <p>Для доступа к панели необходима авторизация через Discord.</p>
+    <a href="/auth/discord/login" class="btn-primary">Войти через Discord</a>
+</div>
+{% endblock %}

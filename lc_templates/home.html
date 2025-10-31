@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h1>Добро пожаловать{% if user %}, {{ user.username }}{% endif %}</h1>
+{% if user %}
+    {% if not has_passport %}
+        <div class="alert">У вас нет паспорта. <a href="/onboarding/passport">Оформить паспорт</a></div>
+    {% endif %}
+    <ul class="menu">
+        <li><a href="/music">Музыка</a></li>
+        {% if user.is_admin %}
+            <li><a href="/dj">DJ</a></li>
+            <li><a href="/admin">Админ-панель</a></li>
+        {% endif %}
+    </ul>
+{% else %}
+    <p>Для доступа к функциям требуется <a href="/login">войти</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{"action": "join", "payload": {"guild_id": ""}}
+{"action": "play", "payload": {"guild_id": ""}}
+{"action": "pause", "payload": {"guild_id": ""}}
+{"action": "skip", "payload": {"guild_id": ""}}
+{"action": "stop", "payload": {"guild_id": ""}}
+{"action": "stop", "payload": {"guild_id": ""}}
+{"action": "leave", "payload": {"guild_id": ""}}
+{"action": "shuffle", "payload": {"guild_id": ""}}
+{"action": "loop", "payload": {"guild_id": ""}}
+{"action": "volume", "payload": {"guild_id": "", "percent": 100}}

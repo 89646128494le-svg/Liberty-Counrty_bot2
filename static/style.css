@@ -1,0 +1,9 @@
+
+body { background:#0f1115; color:#e6e6e6; font:14px system-ui,Segoe UI,Roboto,Arial; margin:0; }
+main { max-width: 980px; margin: 0 auto; padding: 20px; }
+.card { background:#151822; border:1px solid #222634; border-radius:14px; padding:16px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.row.gap { gap:12px }
+.btn { background:#2a2f3b; color:#e6e6e6; border:1px solid #2f3544; padding:8px 12px; border-radius:10px; cursor:pointer; }
+.btn:hover { background:#343a48 }
+input { background:#0e121b; color:#e6e6e6; border:1px solid #283041; padding:8px 10px; border-radius:10px; min-width: 220px; }

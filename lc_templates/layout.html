@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Liberty Country{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('lc_static', path='style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-left">
+                <a href="/">Liberty Country</a>
+            </div>
+            <div class="nav-right">
+                {% if user %}
+                    <span class="user-name">👤 {{ user.username }}</span>
+                    <a href="/music">Музыка</a>
+                    {% if user.is_admin %}
+                        <a href="/dj">DJ</a>
+                        <a href="/admin">Админ</a>
+                    {% endif %}
+                    <a href="/logout">Выход</a>
+                {% else %}
+                    <a href="/login">Войти</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

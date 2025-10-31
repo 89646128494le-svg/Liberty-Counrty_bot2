@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация - Liberty Country RP{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Регистрация</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="discord_id" class="form-label">Discord ID</label>
+                        <input type="text" class="form-control" id="discord_id" name="discord_id" 
+                               placeholder="123456789012345678" required>
+                        <div class="form-text">Ваш Discord ID (должен быть зарегистрирован на сервере)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email (необязательно)</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="form-text">Минимум 6 символов</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Подтвердите пароль</label>
+                        <input type="password" class="form-control" id="confirm_password" 
+                               name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </button>
+                </form>
+                <hr>
+                <p class="text-center mb-0">
+                    Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

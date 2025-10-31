@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block title %}Публичный плеер{% endblock %}
+
+{% block extra_head %}
+<script>
+async function refreshPublic() {
+  const gid = '{{ guild_id }}';
+  if (!gid) return;
+  const res = await fetch('/dj/state?guild_id=' + gid);
+  if (!res.ok) return;
+  const data = await res.json();
+  document.getElementById('public_now_title').textContent = data.title || '—';
+  const qEl = document.getElementById('public_queue');
+  qEl.innerHTML = '';
+  (data.queue || []).forEach(function(t, idx) {
+    const li = document.createElement('li');
+    li.textContent = (idx + 1) + '. ' + t.title;
+    qEl.appendChild(li);
+  });
+}
+setInterval(refreshPublic, 3000);
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Публичный плеер</h1>
+<p>Server ID: {{ guild_id }}</p>
+<p><strong>Сейчас играет:</strong> <span id="public_now_title">{{ data.title if data else '—' }}</span></p>
+<h3>Очередь</h3>
+<ul id="public_queue">
+{% if data and data.queue %}
+{% for idx, t in enumerate(data.queue) %}
+    <li>{{ idx+1 }}. {{ t.title }}</li>
+{% endfor %}
+{% endif %}
+</ul>
+<p><em>Эта страница только для чтения. Управление доступно в разделе «Музыка»/«DJ».</em></p>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block title %}DJ Панель{% endblock %}
+
+{% block extra_head %}
+<script>
+async function sendCtrl(action, payload = {}) {
+  const gid = document.getElementById('guild_id').value.trim();
+  if (!gid) return;
+  payload.guild_id = gid;
+  await fetch('/dj/ctrl', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: action, payload: payload })
+  });
+  refresh();
+}
+
+async function refresh() {
+  const gid = document.getElementById('guild_id').value.trim();
+  if (!gid) return;
+  const res = await fetch('/dj/state?guild_id=' + gid);
+  if (!res.ok) return;
+  const data = await res.json();
+  document.getElementById('now_title').textContent = data.title || '—';
+  const queueDiv = document.getElementById('queue');
+  queueDiv.innerHTML = '';
+  const queue = data.queue || [];
+  queue.forEach(function (t, idx) {
+    const div = document.createElement('div');
+    div.className = 'queue-item';
+    const pos = idx + 1;
+    div.innerHTML =
+      '<span class="q-title">' + pos + '. ' + t.title + '</span>' +
+      '<div class="q-actions">' +
+        '<button onclick="sendCtrl(\'queue_play_index\',{ index: ' + pos + ' })">▶</button>' +
+        '<button onclick="sendCtrl(\'queue_remove\',{ index: ' + pos + ' })">✖</button>' +
+        (pos > 1 ? '<button onclick="sendCtrl(\'queue_move\',{ src_index: ' + pos + ', dst_index: ' + (pos - 1) + ' })">▲</button>' : '') +
+        (pos < queue.length ? '<button onclick="sendCtrl(\'queue_move\',{ src_index: ' + pos + ', dst_index: ' + (pos + 1) + ' })">▼</button>' : '') +
+      '</div>';
+    queueDiv.appendChild(div);
+  });
+}
+setInterval(refresh, 3000);
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>DJ Панель</h1>
+<p>Эта страница доступна только администраторам.</p>
+<label>Guild&nbsp;ID:
+    <input type="text" id="guild_id" value="{{ guild_id }}">
+</label>
+<div class="btn-group">
+    <button onclick="sendCtrl('pause')">Pause</button>
+    <button onclick="sendCtrl('resume')">Resume</button>
+    <button onclick="sendCtrl('skip')">Skip</button>
+    <button onclick="sendCtrl('stop')">Stop</button>
+    <button onclick="sendCtrl('shuffle')">Shuffle</button>
+    <button onclick="sendCtrl('loop')">Loop</button>
+    <button onclick="sendCtrl('leave')">Leave</button>
+</div>
+<p><strong>Сейчас играет:</strong> <span id="now_title">—</span></p>
+<h3>Очередь</h3>
+<div id="queue" class="queue-list"></div>
+<button onclick="sendCtrl('queue_clear')">Очистить очередь</button>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Управление деньгами - Админ-панель{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    <i class="fas fa-dollar-sign"></i> Управление деньгами
+    <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary float-end">
+        <i class="fas fa-arrow-left"></i> Назад
+    </a>
+</h1>
+
+<div class="card">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Изменить баланс гражданина</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="discord_id" class="form-label">Discord ID гражданина</label>
+                    <input type="text" class="form-control" id="discord_id" name="discord_id" 
+                           placeholder="123456789012345678" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="amount" class="form-label">Сумма</label>
+                    <input type="number" class="form-control" id="amount" name="amount" 
+                           placeholder="1000" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="action" class="form-label">Действие</label>
+                    <select class="form-select" id="action" name="action" required>
+                        <option value="add">Добавить</option>
+                        <option value="remove">Снять</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="currency" class="form-label">Валюта</label>
+                    <select class="form-select" id="currency" name="currency" required>
+                        <option value="cash">Наличные</option>
+                        <option value="bank">Банк</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success w-100">
+                <i class="fas fa-check"></i> Применить
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

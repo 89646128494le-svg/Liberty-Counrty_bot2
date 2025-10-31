@@ -1,0 +1,80 @@
+{% extends 'layout.html' %}
+{% block title %}Музыка{% endblock %}
+
+{% block extra_head %}
+<script>
+// Отправка управляющих команд на сервер. Доступные действия:
+// play, playtop, pause, resume, skip, stop, shuffle, loop, leave
+async function sendCtrl(action) {
+  const guild = document.getElementById('guild_id').value.trim();
+  const query = document.getElementById('query').value.trim();
+  const payload = { guild_id: guild };
+  if (query) payload.query = query;
+  await fetch('/dj/ctrl', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: action, payload: payload })
+  });
+  document.getElementById('query').value = '';
+  refresh();
+}
+
+// Регулярно обновляем состояние плеера
+async function refresh() {
+  const guild = document.getElementById('guild_id').value.trim();
+  if (!guild) return;
+  const res = await fetch('/dj/state?guild_id=' + guild);
+  if (!res.ok) return;
+  const data = await res.json();
+  const nowEl = document.getElementById('now_title');
+  nowEl.textContent = data.title || '—';
+  const volEl = document.getElementById('vol_value');
+  volEl.textContent = (data.volume || 0) + '%';
+  const loopEl = document.getElementById('loop_value');
+  loopEl.textContent = data.loop ? 'вкл' : 'выкл';
+  // Заполняем очередь
+  const qEl = document.getElementById('queue_list');
+  qEl.innerHTML = '';
+  (data.queue || []).forEach(function(t, idx) {
+    const li = document.createElement('li');
+    li.textContent = (idx + 1) + '. ' + t.title;
+    qEl.appendChild(li);
+  });
+}
+setInterval(refresh, 3000);
+</script>
+{% endblock %}
+
+{% block content %}
+<h1>Музыка</h1>
+{% if not user %}
+<p>Для доступа войдите через Discord.</p>
+{% else %}
+<div class="music-controls">
+  <label>Guild&nbsp;ID:
+    <input type="text" id="guild_id" value="{{ guild_id }}" placeholder="ID сервера">
+  </label>
+  <br>
+  <label>Запрос или URL:
+    <input type="text" id="query" placeholder="Например: Nirvana Smells Like Teen Spirit">
+  </label>
+  <br>
+  <div class="btn-group">
+    <button onclick="sendCtrl('play')">Play</button>
+    <button onclick="sendCtrl('playtop')">Play Top</button>
+    <button onclick="sendCtrl('pause')">Pause</button>
+    <button onclick="sendCtrl('resume')">Resume</button>
+    <button onclick="sendCtrl('skip')">Skip</button>
+    <button onclick="sendCtrl('stop')">Stop</button>
+    <button onclick="sendCtrl('shuffle')">Shuffle</button>
+    <button onclick="sendCtrl('loop')">Loop</button>
+    <button onclick="sendCtrl('leave')">Leave</button>
+  </div>
+  <p><strong>Сейчас играет:</strong> <span id="now_title">—</span></p>
+  <p><strong>Громкость:</strong> <span id="vol_value">—</span></p>
+  <p><strong>Повтор:</strong> <span id="loop_value">—</span></p>
+  <h3>Очередь</h3>
+  <ol id="queue_list"></ol>
+</div>
+{% endif %}
+{% endblock %}

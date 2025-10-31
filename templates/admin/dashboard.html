@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Админ-панель - Liberty Country RP{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    <i class="fas fa-crown text-warning"></i> Панель администратора
+</h1>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-3x mb-2"></i>
+                <h2>{{ stats.total_citizens }}</h2>
+                <p class="mb-0">Всего граждан</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-3x mb-2"></i>
+                <h2>{{ stats.total_businesses }}</h2>
+                <p class="mb-0">Бизнесов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-exclamation-triangle fa-3x mb-2"></i>
+                <h2>{{ stats.active_warrants }}</h2>
+                <p class="mb-0">Активных розысков</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <i class="fas fa-file-invoice-dollar fa-3x mb-2"></i>
+                <h2>{{ stats.unpaid_fines }}</h2>
+                <p class="mb-0">Неоплаченных штрафов</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Экономика сервера</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-success">${{ "{:,.0f}".format(stats.total_money) }}</h3>
+                <p class="text-muted">Всего денег в экономике сервера</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tasks"></i> Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('admin_citizens') }}" class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-users"></i> Управление гражданами
+                </a>
+                <a href="{{ url_for('admin_money') }}" class="btn btn-success w-100 mb-2">
+                    <i class="fas fa-dollar-sign"></i> Управление деньгами
+                </a>
+                <a href="{{ url_for('admin_warrants') }}" class="btn btn-danger w-100 mb-2">
+                    <i class="fas fa-search"></i> Розыски
+                </a>
+                <a href="{{ url_for('admin_fines') }}" class="btn btn-warning w-100 mb-2">
+                    <i class="fas fa-file-invoice"></i> Штрафы
+                </a>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-info w-100">
+                    <i class="fas fa-user-shield"></i> Веб-пользователи
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history"></i> Последние действия</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_sessions %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>IP</th>
+                                    <th>Дата</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in recent_sessions[:5] %}
+                                <tr>
+                                    <td>{{ session.user_id }}</td>
+                                    <td>{{ session.ip_address }}</td>
+                                    <td>{{ session.created_at }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Нет активности</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+{% block title %}Оформление паспорта{% endblock %}
+
+{% block content %}
+<h1>Оформление паспорта</h1>
+<form action="/onboarding/passport" method="post" class="passport-form">
+    <label>Имя:<br>
+        <input type="text" name="first_name" required>
+    </label><br>
+    <label>Фамилия:<br>
+        <input type="text" name="last_name" required>
+    </label><br>
+    <label>Дата рождения:<br>
+        <input type="date" name="birth_date" required>
+    </label><br>
+    <label>Место рождения:<br>
+        <input type="text" name="birth_place" required>
+    </label><br>
+    <label>Биография:<br>
+        <textarea name="bio" rows="4" cols="40" required></textarea>
+    </label><br>
+    <button type="submit">Получить паспорт</button>
+</form>
+{% endblock %}

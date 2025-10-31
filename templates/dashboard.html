@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет - {{ citizen.first_name }} {{ citizen.last_name }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">
+    <i class="fas fa-id-card"></i> Личный кабинет
+</h1>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user"></i> Личные данные</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Имя:</strong> {{ citizen.first_name }} {{ citizen.last_name }}</p>
+                <p><strong>Дата рождения:</strong> {{ citizen.birth_date }}</p>
+                <p><strong>Место рождения:</strong> {{ citizen.birth_place }}</p>
+                <p><strong>Место жительства:</strong> {{ citizen.residence }}</p>
+                <p><strong>Работа:</strong> {{ citizen.job }}</p>
+                {% if citizen.passport_issued %}
+                    <span class="badge bg-success">✓ Паспорт выдан</span>
+                {% else %}
+                    <span class="badge bg-danger">✗ Паспорта нет</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-dollar-sign"></i> Финансы</h5>
+            </div>
+            <div class="card-body">
+                <h3 class="text-success">${{ citizen.cash }}</h3>
+                <p class="text-muted">Наличные</p>
+                <hr>
+                <h3 class="text-primary">${{ citizen.bank }}</h3>
+                <p class="text-muted">Банковский счет</p>
+                <hr>
+                <h4>Всего: ${{ citizen.cash + citizen.bank }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Статус</h5>
+            </div>
+            <div class="card-body">
+                {% if warrants %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> В розыске!
+                        <br>Уровень: {{ warrants[0].level }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> Законопослушный гражданин
+                    </div>
+                {% endif %}
+
+                {% if fines %}
+                    <p><strong>Неоплаченных штрафов:</strong> {{ fines|length }}</p>
+                {% else %}
+                    <p class="text-muted">Штрафов нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-car"></i> Мой транспорт ({{ vehicles|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if vehicles %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Номер</th>
+                                    <th>Модель</th>
+                                    <th>Цвет</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in vehicles %}
+                                <tr>
+                                    <td>{{ vehicle.plate }}</td>
+                                    <td>{{ vehicle.model }}</td>
+                                    <td>{{ vehicle.color }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">У вас нет транспорта</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-building"></i> Мои бизнесы ({{ businesses|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if businesses %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Тип</th>
+                                    <th>Доход</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for business in businesses %}
+                                <tr>
+                                    <td>{{ business.name }}</td>
+                                    <td>{{ business.type }}</td>
+                                    <td>${{ business.income }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">У вас нет бизнесов</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if house %}
+<div class="card mb-3">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-home"></i> Моя недвижимость</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Адрес:</strong> {{ house.address }}</p>
+        <p><strong>Район:</strong> {{ house.district }}</p>
+        {% if house.owner_id == citizen.id %}
+            <span class="badge bg-success">В собственности</span>
+        {% else %}
+            <span class="badge bg-primary">Аренда - ${{ house.rent }}/день</span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if fines %}
+<div class="card mb-3">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="fas fa-file-invoice-dollar"></i> Неоплаченные штрафы</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Сумма</th>
+                        <th>Причина</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fine in fines %}
+                    <tr>
+                        <td>${{ fine.amount }}</td>
+                        <td>{{ fine.reason }}</td>
+                        <td>{{ fine.issue_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

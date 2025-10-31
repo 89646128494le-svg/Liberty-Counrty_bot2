@@ -1,0 +1,84 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="card">
+  <h2>🎛️ DJ панель (live)</h2>
+  <div class="row gap">
+    <input id="gid" placeholder="Guild ID">
+    <input id="q" placeholder="Запрос или URL">
+    <input id="vol" placeholder="Громкость % (0-200)" value="100">
+  </div>
+  <div class="row gap" style="margin-top:8px">
+    <button class="btn" onclick="ctrl('join')">Join</button>
+    <button class="btn" onclick="ctrl('play')">Play</button>
+    <button class="btn" onclick="ctrl('pause')">Pause</button>
+    <button class="btn" onclick="ctrl('resume')">Resume</button>
+    <button class="btn" onclick="ctrl('skip')">Skip</button>
+    <button class="btn" onclick="ctrl('stop')">Stop</button>
+    <button class="btn" onclick="ctrl('leave')">Leave</button>
+    <button class="btn" onclick="ctrl('shuffle')">Shuffle</button>
+    <button class="btn" onclick="ctrl('loop')">Loop</button>
+    <button class="btn" onclick="ctrl('volume')">Volume</button>
+  </div>
+  <hr style="opacity:.2;margin:16px 0">
+  <div id="nowplaying" class="np">
+    <div class="np-title">Сейчас ничего не играет</div>
+    <div class="np-sub" id="np-sub"></div>
+    <div class="progress"><div id="bar" class="bar" style="width:0%"></div></div>
+    <div class="np-meta" id="np-meta"></div>
+  </div>
+</div>
+<script>
+function ctrl(action){
+  const guild_id = document.getElementById('gid').value.trim();
+  const query = document.getElementById('q').value.trim();
+  const percent = parseInt(document.getElementById('vol').value || '100', 10);
+  const form = new FormData();
+  form.append('action', action);
+  form.append('guild_id', guild_id);
+  form.append('query', query);
+  form.append('percent', percent);
+  fetch('/dj/ctrl', {method:'POST', body: form}).then(()=>{});
+}
+function fmt(sec){
+  sec = Math.max(0, Math.floor(sec||0));
+  const m = Math.floor(sec/60), s = sec%60;
+  return m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+}
+async function refresh(){
+  const gid = document.getElementById('gid').value.trim();
+  if(!gid) return;
+  try{
+    const r = await fetch('/dj/state?guild_id='+encodeURIComponent(gid));
+    if(!r.ok) return;
+    const np = await r.json();
+    const title = np.title || 'Сейчас ничего не играет';
+    const sub = np.web ? `<a href="${np.web}" target="_blank">${np.web}</a>` : '';
+    document.querySelector('.np-title').textContent = title;
+    document.getElementById('np-sub').innerHTML = sub;
+    const started = np.started_at || 0;
+    const dur = np.duration || 0;
+    const status = np.status || 'idle';
+    const loop = np.loop ? '🔁' : '⟲';
+    const vol = (np.volume ?? 100) + '%';
+    const qlen = np.queue_len ?? 0;
+    let elapsed = 0;
+    if(started>0 && status!=='paused'){
+      elapsed = Math.floor(Date.now()/1000 - started);
+    }
+    const pct = dur>0 ? Math.min(100, Math.floor(elapsed*100/dur)) : 0;
+    document.getElementById('bar').style.width = pct + '%';
+    document.getElementById('np-meta').textContent = `Статус: ${status} • ${fmt(elapsed)} / ${fmt(dur)} • ${loop} • 🔊 ${vol} • В очереди: ${qlen}`;
+  }catch(e){}
+}
+setInterval(refresh, 1000);
+</script>
+<style>
+.np { background:rgba(255,255,255,.03); border:1px solid #283041; border-radius:12px; padding:14px; }
+.np-title { font-size:18px; font-weight:600; margin-bottom:6px; }
+.np-sub { font-size:12px; opacity:.8; margin-bottom:10px; }
+.progress { background:#1b1f2a; border-radius:999px; height:8px; overflow:hidden; }
+.bar { background:linear-gradient(90deg,#7c3aed,#06b6d4); height:100%; transition:width .4s; }
+.np-meta { font-size:12px; opacity:.85; margin-top:8px; }
+</style>
+{% endblock %}
